@@ -4,11 +4,12 @@ import {
   CheckCircle, Undo, AlertCircle, Edit2, X, Save 
 } from 'lucide-react';
 
-const TaskCard = ({ task, onDelete, onToggleComplete, onUpdate }: { 
+const TaskCard = ({ task, onDelete, onToggleComplete, onUpdate, teamMembers }: { 
   task: any, 
   onDelete: (id: string) => void,
   onToggleComplete: (id: string, currentStatus: boolean) => void,
-  onUpdate: (id: string, data: any) => void
+  onUpdate: (id: string, data: any) => void,
+  teamMembers: any[]
 }) => {
   // 1. EDIT STATE
   const [isEditing, setIsEditing] = useState(false);
@@ -21,6 +22,8 @@ const TaskCard = ({ task, onDelete, onToggleComplete, onUpdate }: {
   const dependencies = task.blocked_by || [];
   const blockingTasks = dependencies.filter((d: any) => d.depends_on && !d.depends_on.is_completed);
   const isBlocked = blockingTasks.length > 0;
+  const member = teamMembers?.find(m => m.id === task.assignee);
+  const displayName = member ? member.name : task.assignee;
 
   // 3. ACTIONS
 const handleSave = () => {
@@ -179,8 +182,10 @@ const handleSave = () => {
       <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
         <div className="flex items-center gap-2 text-slate-500">
           <User size={14} />
-          <span className="text-xs font-medium">{task.assignee}</span>
+          
+          <span className="text-xs font-medium">{displayName}</span>
         </div>
+
 
         {task.drive_url && (
           <a 

@@ -4,14 +4,11 @@ import React, { useState } from 'react';
 import { PlusCircle } from 'lucide-react';
 
 // Added 'projects' to the props so the form can see them
-export default function TaskForm({ 
-  onAddTask, 
-  projects,
-  tasks 
-}: { 
+export default function TaskForm({ onAddTask, projects, tasks, teamMembers }: { 
   onAddTask: (task: any) => void, 
-  projects: any[],
-  tasks: any[] 
+  projects: any[], 
+  tasks: any[],
+  teamMembers: string[] // Add this
 }) {
   // 1. ALL HOOKS AT THE TOP
   const [title, setTitle] = useState('');
@@ -87,13 +84,18 @@ console.log("Tasks received in Form:", tasks);
         <div>
           <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Assignee</label>
           <select 
-            value={assignee}
-            onChange={(e) => setAssignee(e.target.value)}
-            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
-          >
-            <option value="User A">User A</option>
-            <option value="User B">User B</option>
-          </select>
+  required
+  value={assignee}
+  onChange={(e) => setAssignee(e.target.value)}
+  className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-bold text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
+>
+  <option value="" className="text-slate-400 font-medium">Select Assignee...</option>
+  {teamMembers.map((member: any) => (
+    <option key={member.id} value={member.id} className="text-slate-900 font-bold">
+      {member.name}
+    </option>
+  ))}
+</select>
         </div>
 
         {/* Due Date */}
@@ -116,6 +118,7 @@ console.log("Tasks received in Form:", tasks);
             onChange={(e) => setDriveUrl(e.target.value)}
             placeholder="https://docs.google.com/..."
             className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
+          
           />
         </div>
 
@@ -147,7 +150,7 @@ console.log("Tasks received in Form:", tasks);
   <select 
   value={dependsOnId}
   onChange={(e) => setDependsOnId(e.target.value)}
-  className="..."
+  className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-slate-900 font-bold text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none"
 >
   <option value="">No Dependency</option>
   {tasks && tasks.filter(t => !t.is_completed).map(t => (

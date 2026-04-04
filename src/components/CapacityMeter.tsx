@@ -1,34 +1,49 @@
 import React from 'react';
 
-interface CapacityProps {
-  user: string;
+interface CapacityMeterProps {
+  name: string;
   points: number;
-  maxCapacity: number;
+  max?: number; // Optional: defaults to 21
 }
 
-const CapacityMeter = ({ user, points, maxCapacity }: CapacityProps) => {
-  const usage = (points / maxCapacity) * 100;
+export default function CapacityMeter({ name, points, max = 60 }: CapacityMeterProps) {
+  const percentage = Math.min((points / max) * 100, 100);
   
-  const getStatusColor = () => {
-    if (usage > 110) return 'bg-red-500';
-    if (usage < 70) return 'bg-blue-400';
-    return 'bg-green-500';
+  const getBarColor = () => {
+    if (points >= max) return 'bg-red-500';
+    if (points >= max * 0.6) return 'bg-amber-500'; // Dynamic warning at 60% load
+    return 'bg-blue-600';
   };
 
   return (
-    <div className="p-4 bg-white rounded-xl shadow-sm border border-slate-200 w-64">
-      <div className="flex justify-between items-end mb-2">
-        <h3 className="font-bold text-slate-800">{user}</h3>
-        <span className="text-sm font-mono text-slate-600">{points}/{maxCapacity}</span>
+    <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm transition-all hover:shadow-md">
+      <div className="flex justify-between items-center mb-2">
+        <div className="flex flex-col">
+          <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
+            Resource Load
+          </span>
+          <span className="text-sm font-bold text-slate-800">{name}</span>
+        </div>
+        <div className="text-right">
+          <span className={`text-sm font-black ${points > max ? 'text-red-600' : 'text-slate-700'}`}>
+            {points}
+          </span>
+          <span className="text-[10px] font-bold text-slate-400"> / {max} PTS</span>
+        </div>
       </div>
-      <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+      
+      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
         <div 
-          className={`h-full transition-all duration-500 ${getStatusColor()}`}
-          style={{ width: `${Math.min(usage, 100)}%` }}
+          className={`h-full transition-all duration-700 ease-out ${getBarColor()}`}
+          style={{ width: `${percentage}%` }}
         />
       </div>
+
+      {points > max && (
+        <p className="text-[9px] font-bold text-red-500 uppercase mt-2 animate-pulse">
+          ⚠️ Critical Overload
+        </p>
+      )}
     </div>
   );
-};
-
-export default CapacityMeter;
+}

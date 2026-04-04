@@ -40,7 +40,7 @@ const ProjectCard = ({ project, tasks, onUpdateProject }: any) => {
           onClick={() => setIsEditing(!isEditing)}
           className={`text-[10px] font-black px-3 py-1 rounded-full uppercase transition-all hover:ring-2 hover:ring-blue-300 ${
             project.status === 'Completed' ? 'bg-green-100 text-green-700' : 
-            project.status === 'Blocked' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
+            project.status === 'At Risk' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
           }`}
         >
           {project.status || 'On Track'} • {isEditing ? 'Cancel' : 'Update'}
@@ -58,7 +58,7 @@ const ProjectCard = ({ project, tasks, onUpdateProject }: any) => {
             className="w-full p-2 text-xs font-bold rounded border border-slate-300 bg-white text-slate-900 outline-none"
           >
             <option value="On Track">On Track</option>
-            <option value="Blocked">Blocked</option>
+            <option value="At Risk">At Risk</option>
             <option value="Completed">Completed</option>
           </select>
           <input 
@@ -91,7 +91,7 @@ const ProjectCard = ({ project, tasks, onUpdateProject }: any) => {
         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
           <div 
             className={`h-full transition-all duration-700 ${
-              project.status === 'Blocked' ? 'bg-red-500' : 
+              project.status === 'At Risk' ? 'bg-red-500' : 
               project.status === 'Completed' ? 'bg-green-500' : 'bg-blue-600'
             }`} 
             style={{ width: `${progress}%` }}
