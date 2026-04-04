@@ -176,8 +176,12 @@ export default function Home() {
       <h3 className="font-black text-slate-800 uppercase tracking-widest text-sm">
         {member.name} {/* Display the Alias */}
       </h3>
-      <span className="text-[10px] font-bold py-1 px-2 bg-slate-200 rounded text-slate-600">
-        {getMemberPoints(member.id)} PTS
+      <span className={`text-[10px] font-bold py-1 px-2 rounded ${
+        getMemberPoints(member.id) >= member.capacity 
+          ? 'bg-red-100 text-red-600' 
+          : 'bg-slate-200 text-slate-600'
+      }`}>
+        {getMemberPoints(member.id)} / {member.capacity} PTS
       </span>
     </div>
 
