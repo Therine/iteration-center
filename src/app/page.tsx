@@ -2,9 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { Zap } from 'lucide-react'
 import CapacityMeter from '@/components/CapacityMeter';
 import TaskCard from '@/components/TaskCard';
 import TaskForm from '@/components/TaskForm';
+import ProjectForm from '@/components/ProjectForm'
+import ProjectDashboard from '@/components/ProjectDashboard';
 
 export default function Home() {
   const [tasks, setTasks] = useState([]);
@@ -22,7 +25,8 @@ export default function Home() {
     .from('tasks')
     .select(`
       *,
-      task_project_links (projects (name)),
+
+      task_project_links (projects (*)),
       blocked_by: task_dependencies!task_id (
         depends_on: tasks!depends_on_id (id, title, is_completed)
       )
@@ -145,11 +149,29 @@ const updateTask = async (id: string, updatedData: any) => {
     if (countB !== countA) return countB - countA;
     return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
   };
+const addProject = async (name: string) => {
+  const { error } = await supabase
+    .from('projects')
+    .insert([{ name }]);
 
+  if (!error) {
+    // Re-fetch projects so they appear in the TaskForm dropdown
+    const { data } = await supabase.from('projects').select('*').order('name');
+    if (data) setProjects(data);
+  }
+};
   if (loading) return <div className="p-20 text-center font-bold text-slate-400 italic">Initializing UMN Iteration Engine...</div>;
 
   return (
-    <main className="min-h-screen bg-slate-50 p-8 max-w-5xl mx-auto">
+    
+   <main className="max-w-7xl mx-auto px-6 py-12 bg-slate-50 ">
+      <header className="mb-8 flex justify-between items-end">
+  <div>
+    <h1 className="text-3xl font-black text-slate-900 tracking-tight">E-CRM ITERATION</h1>
+    <p className="text-slate-500 font-medium">U of M Strategic Velocity Board</p>
+  </div>
+  <ProjectForm onAddProject={addProject} />
+</header>
       <header className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">E-CRM Iteration Center</h1>
@@ -160,7 +182,13 @@ const updateTask = async (id: string, updatedData: any) => {
           <CapacityMeter user="User B" points={pointsB} maxCapacity={21} />
         </div>
       </header>
-      
+      <section className="mb-12">
+    <div className="flex items-center gap-2 mb-6">
+      <Zap className="text-amber-500" size={20} fill="currentColor" />
+      <h2 className="text-xl font-black text-slate-900 uppercase tracking-tighter">Strategic Velocity</h2>
+    </div>
+    <ProjectDashboard projects={projects} tasks={tasks} />
+  </section>
       {/* Passing projects to the form once */}
       <TaskForm onAddTask={addTask} projects={projects} tasks={tasks} />
 
