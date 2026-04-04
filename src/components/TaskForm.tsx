@@ -64,7 +64,7 @@ console.log("Tasks received in Form:", tasks);
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="What needs to be done?"
-            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
           />
         </div>
 
@@ -75,7 +75,7 @@ console.log("Tasks received in Form:", tasks);
             required
             value={size}
             onChange={(e) => setSize(Number(e.target.value))}
-            className="w-full p-2 border border-slate-200 rounded-lg outline-none"
+            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
           >
             {[1, 2, 3, 5, 8, 13].map(num => (
               <option key={num} value={num}>{num}</option>
@@ -89,7 +89,7 @@ console.log("Tasks received in Form:", tasks);
           <select 
             value={assignee}
             onChange={(e) => setAssignee(e.target.value)}
-            className="w-full p-2 border border-slate-200 rounded-lg outline-none"
+            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
           >
             <option value="User A">User A</option>
             <option value="User B">User B</option>
@@ -103,7 +103,7 @@ console.log("Tasks received in Form:", tasks);
             type="date" 
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
           />
         </div>
 
@@ -115,7 +115,7 @@ console.log("Tasks received in Form:", tasks);
             value={drive_url}
             onChange={(e) => setDriveUrl(e.target.value)}
             placeholder="https://docs.google.com/..."
-            className="w-full p-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
           />
         </div>
 
