@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { 
   Calendar, ExternalLink, FileText, User, Trash2, 
   CheckCircle, Undo, AlertCircle, Edit2, X, Save 
@@ -20,6 +20,17 @@ const TaskCard = ({ task, onDelete, onToggleComplete, onUpdate, teamMembers, all
   const [editProjectIds, setEditProjectIds] = useState<string[]>(
   task.task_project_links?.map((l: any) => l.projects?.id) || []
 );
+  const [editAssignee, setEditAssignee] = useState(task.assignee);
+  const [editDueDate, setEditDueDate] = useState(task.due_date || '');
+  // This ensures the edit form stays in sync with the database
+useEffect(() => {
+  setEditTitle(task.title);
+  setEditSize(task.size);
+  setEditUrl(task.drive_url || '');
+  setEditAssignee(task.assignee);
+  setEditDueDate(task.due_date || ''); // <--- Add this
+  setEditProjectIds(task.task_project_links?.map((l: any) => l.projects?.id) || []);
+}, [task]);
   // 2. DERIVED STATE
   const isOverdue = !task.is_completed && task.due_date && new Date(task.due_date) < new Date();
   const projectCount = task.task_project_links?.length || 0;
@@ -35,7 +46,9 @@ const handleSave = () => {
     title: editTitle, 
     size: Number(editSize),
     drive_url: editUrl, // Now sending the new URL
-    projectIds: editProjectIds
+    projectIds: editProjectIds,
+    assignee: editAssignee,
+    due_date: editDueDate
   });
   setIsEditing(false);
 };
@@ -59,7 +72,29 @@ const handleSave = () => {
             className="w-full p-2 border border-blue-200 rounded text-slate-900 font-semibold outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        
+        <div className="mb-4">
+  <label className="block text-[10px] font-black text-blue-600 uppercase mb-1">Reassign Task</label>
+  <select 
+    value={editAssignee}
+    onChange={(e) => setEditAssignee(e.target.value)}
+    className="w-full p-2 border border-blue-200 rounded text-slate-900 font-bold text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+  >
+    {teamMembers.map((member: any) => (
+      <option key={member.id} value={member.id}>
+        {member.name}
+      </option>
+    ))}
+  </select>
+</div>
+<div className="mb-4">
+  <label className="block text-[10px] font-black text-blue-600 uppercase mb-1">Due Date</label>
+  <input 
+    type="date"
+    value={editDueDate}
+    onChange={(e) => setEditDueDate(e.target.value)}
+    className="w-full p-2 border border-blue-200 rounded text-slate-900 font-bold text-xs outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+  />
+</div>
         <div className="mb-4">
           <label className="block text-[10px] font-black text-blue-600 uppercase mb-1">Fibonacci Size</label>
           <select 

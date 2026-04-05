@@ -14,9 +14,24 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState<any[]>([]);
   
+  // 1. ADD THE TOGGLE STATE
+  const [viewMode, setViewMode] = useState<'all' | 'iteration'>('iteration');
+
+  // 2. DEFINE THE DATES
+  const ITERATION_START = new Date('2026-04-08');
+  const ITERATION_END = new Date('2026-04-21');
+
+  // 3. CREATE THE FILTERED LIST
+  const displayTasks = tasks.filter(task => {
+    if (viewMode === 'all') return true;
+    if (!task.due_date) return false;
+    const dueDate = new Date(task.due_date);
+    return dueDate >= ITERATION_START && dueDate <= ITERATION_END;
+  });
+
+
+
   // 1. DYNAMIC TEAM CONFIG
- 
-  
   const TEAM_MEMBERS = [
   { id: "user_a", name: "Carrie Otto" , capacity: 40},
   { id: "user_b", name: "Katherine DeLong" , capacity: 40},
@@ -105,7 +120,7 @@ export default function Home() {
   // 2. Update the main Task record
   const { error: taskError } = await supabase
     .from('tasks')
-    .update(finalData)
+    .update(taskFields)
     .eq('id', id);
 
   if (taskError) {
@@ -168,6 +183,19 @@ export default function Home() {
           <p className="text-slate-500 font-medium">U of M Strategic Velocity Board</p>
         </div>
         <ProjectForm onAddProject={addProject} />
+        <div className="mb-8 p-6 bg-slate-900 rounded-2xl text-white shadow-xl border border-slate-700">
+  <div className="flex justify-between items-center">
+    <div>
+      <h1 className="text-3xl font-black tracking-tight">FY26 PI3.5 ITERATION</h1>
+      <p className="text-slate-400 font-medium">April 8 — April 21, 2026</p>
+    </div>
+    <div className="text-right">
+      <span className="text-[10px] font-black bg-blue-600 px-3 py-1 rounded-full uppercase">
+        Active Period
+      </span>
+    </div>
+  </div>
+</div>
       </header>
 
       {/* STRATEGIC DASHBOARD */}
@@ -178,7 +206,25 @@ export default function Home() {
         </div>
         <ProjectDashboard projects={projects} tasks={tasks} onUpdateProject={updateProject} />
       </section>
-
+{/* VIEW TOGGLE */}
+<div className="flex bg-slate-200 p-1 rounded-xl w-fit mb-6">
+  <button
+    onClick={() => setViewMode('iteration')}
+    className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
+      viewMode === 'iteration' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'
+    }`}
+  >
+    CURRENT ITERATION
+  </button>
+  <button
+    onClick={() => setViewMode('all')}
+    className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${
+      viewMode === 'all' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500'
+    }`}
+  >
+    ALL TASKS
+  </button>
+</div>
       {/* CAPACITY OVERVIEW */}
       <section className="mb-12">
         <h2 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Team Resource Load</h2>
@@ -215,23 +261,22 @@ export default function Home() {
         {getMemberPoints(member.id)} / {member.capacity} PTS
       </span>
     </div>
-
-            <div className="space-y-4">
-              {tasks
-        .filter((t: any) => t.assignee === member.id)
-                .sort((a, b) => (a.is_completed === b.is_completed ? 0 : a.is_completed ? 1 : -1))
-                .map((t: any) => (
-                  <TaskCard 
-                    key={t.id} 
-                    task={t} 
-                    onDelete={deleteTask} 
-                    onToggleComplete={toggleComplete}
-                    onUpdate={updateTask}
-                    teamMembers={TEAM_MEMBERS}
-                    allProjects={projects}
-                  />
-                ))}
-            </div>
+<div className="space-y-4">
+  {displayTasks // <--- Use the filtered list here!
+    .filter((t: any) => t.assignee === member.id)
+    .sort((a, b) => (a.is_completed === b.is_completed ? 0 : a.is_completed ? 1 : -1))
+    .map((t: any) => (
+      <TaskCard key={t.id} 
+        task={t} 
+        onDelete={deleteTask} 
+        onToggleComplete={toggleComplete}
+        onUpdate={updateTask}
+        teamMembers={TEAM_MEMBERS}
+        allProjects={projects} />
+    ))
+  }
+</div>
+            
           </div>
         ))}
       </section>
