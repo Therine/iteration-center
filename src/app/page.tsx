@@ -261,10 +261,11 @@ export default function Home() {
           <div className="mt-4 p-4 bg-blue-600 rounded-xl text-white shadow-lg inline-block">
             <h2 className="text-xl font-bold leading-none">{activeIteration.name}</h2>
             <p className="text-blue-100 text-xs font-mono mt-1">
-              {activeIteration.start.toLocaleDateString('en-US', { timeZone: 'UTC' })} 
-              {" — "}
-              {new Date(activeIteration.end.getTime() - 86400000).toLocaleDateString('en-US', { timeZone: 'UTC' })}
-            </p>
+  {activeIteration.start.toLocaleDateString('en-US', { timeZone: 'UTC' })} 
+  {" — "}
+  {/* Removed the - 86400000 math so it shows the exact date from Supabase */}
+  {activeIteration.end.toLocaleDateString('en-US', { timeZone: 'UTC' })}
+</p>
             {/* Added the Form Trigger here */}
             <IterationForm current={activeIteration} onUpdate={handleUpdateIteration} />
           </div>
