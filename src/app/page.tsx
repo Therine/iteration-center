@@ -41,7 +41,7 @@ const getCurrentIteration = (calendarEvents: any[]) => {
   if (!calendarEvents || calendarEvents.length === 0) return null;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const piEvents = calendarEvents.filter(e => e.event_title.toUpperCase().includes("PI"));
+  const piEvents = calendarEvents.filter(e => true);
   return piEvents.find(event => today >= event.start_date && today < event.end_date) || null;
 };
 
@@ -49,14 +49,15 @@ export default function Home() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [projects, setProjects] = useState<any[]>([]);
-  // 1. ADD THE TOGGLE STATE
   const [viewMode, setViewMode] = useState<'all' | 'iteration'>('iteration');
   const [showCompleted, setShowCompleted] = useState(false);
+
+  // Initialize with a cleaner placeholder
   const [activeIteration, setActiveIteration] = useState({
-  start: new Date(),
-  end: new Date(),
-  name: 'Syncing Iteration...'
-});
+    start: new Date(),
+    end: new Date(new Date().getTime() + 86400000), // Default to +1 day so math doesn't break
+    name: 'Loading Iteration...'
+  });
  // Dynamic Date Logic - strictly using the state
 const ITERATION_START = activeIteration.start;
 const ITERATION_END = activeIteration.end;
