@@ -75,13 +75,13 @@ const handleSave = () => {
         </div>
         <div className="mb-4">
   <label className="block text-[10px] font-black text-blue-600 uppercase mb-1">Reassign Task</label>
- <select
-  className="text-xs font-bold bg-slate-100 border-none rounded-lg p-1"
+<select
+  className="text-[10px] font-bold bg-slate-100 border-none rounded p-1"
   value={task.assignee || ''}
   onChange={(e) => onUpdate(task.id, { assignee: e.target.value })}
 >
   <option value="">Unassigned</option>
-  {teamMembers.map((name: string) => (
+  {teamMembers && teamMembers.map((name: string) => (
     <option key={name} value={name}>
       {name}
     </option>

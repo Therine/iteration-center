@@ -80,23 +80,22 @@ console.log("Tasks received in Form:", tasks);
           </select>
         </div>
 
-        {/* Assignee */}
-        <div>
-          <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Assignee</label>
-  {/* Ensure teamMembers is defined in your props */}
-<select 
-  className="w-full p-2 border rounded-xl bg-white"
-  value={taskData.assignee || ""} 
-  onChange={(e) => setTaskData({...taskData, assignee: e.target.value})}
->
-  <option value="">Select Assignee...</option>
-  {teamMembers && teamMembers.map((name: string) => (
-    <option key={name} value={name}>
-      {name}
-    </option>
-  ))}
-</select>
-        </div>
+{/* Assignee */}
+<div>
+  <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Assignee</label>
+  <select 
+    className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900"
+    value={assignee} // Use 'assignee' state, not 'taskData.assignee'
+    onChange={(e) => setAssignee(e.target.value)} // Use 'setAssignee'
+  >
+    <option value="">Unassigned</option>
+    {teamMembers && teamMembers.map((name: string) => (
+      <option key={name} value={name}>
+        {name}
+      </option>
+    ))}
+  </select>
+</div>
 
         {/* Due Date */}
         <div>
