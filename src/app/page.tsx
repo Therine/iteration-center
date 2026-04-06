@@ -10,7 +10,6 @@ import ProjectForm from '@/components/ProjectForm';
 import ProjectDashboard from '@/components/ProjectDashboard';
 
 const fetchCalendarEvents = async () => {
-  // 1. Using AllOrigins proxy instead of corsproxy.io
   const ICS_URL = "https://calendar.google.com/calendar/ical/c_rdq4brm3fr9ht2pc9lacraeg4g%40group.calendar.google.com/public/basic.ics";
   const PROXY_URL = `https://api.allorigins.win/get?url=${encodeURIComponent(ICS_URL)}&timestamp=${Date.now()}`;
 
@@ -19,12 +18,13 @@ const fetchCalendarEvents = async () => {
     if (!response.ok) throw new Error("Proxy response was not ok");
     
     const data = await response.json();
-    const text = data.contents; // AllOrigins wraps the result in a 'contents' field
+    const text = data.contents; 
     
     const events = text.split("BEGIN:VEVENT");
     const parsedEvents: any[] = [];
 
-    events.forEach(event => {
+    // Explicitly typed (event: string) to satisfy the TypeScript compiler
+    events.forEach((event: string) => {
       const summary = event.match(/SUMMARY:(.*)/i);
       const start = event.match(/DTSTART(?:;VALUE=DATE)?:(\d{8})/i);
       const end = event.match(/DTEND(?:;VALUE=DATE)?:(\d{8})/i);
