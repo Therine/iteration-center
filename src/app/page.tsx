@@ -8,6 +8,7 @@ import TaskCard from '@/components/TaskCard';
 import TaskForm from '@/components/TaskForm';
 import ProjectForm from '@/components/ProjectForm';
 import ProjectDashboard from '@/components/ProjectDashboard';
+import IterationForm from '@/components/IterationForm';
 
 const fetchCalendarEvents = async () => {
   const ICS_URL = "https://calendar.google.com/calendar/ical/c_rdq4brm3fr9ht2pc9lacraeg4g%40group.calendar.google.com/public/basic.ics";
@@ -137,7 +138,7 @@ const ITERATION_NAME = activeIteration.name;
 useEffect(() => {
   fetchTasks();
   fetchProjects();
-
+  fetchIteration();
   // 1. Realtime Subscription
   const channel = supabase
     .channel('schema-db-changes')
@@ -148,32 +149,41 @@ useEffect(() => {
     )
     .subscribe();
 
-  // 2. Calendar Sync Logic
-  const syncCalendar = async () => {
-  try {
-    const data = await fetchCalendarEvents();
-    if (!data) return; // Exit silently if proxy fails
+ // 1. Fetch Iteration from Supabase
+const fetchIteration = async () => {
+  const { data, error } = await supabase
+    .from('iterations')
+    .select('*')
+    .limit(1)
+    .single();
 
-    const current = getCurrentIteration(data);
-    if (current) {
-      setActiveIteration({
-        start: current.start_date,
-        end: current.end_date,
-        name: current.event_title
-      });
-    }
-  } catch (err) {
-    // We don't even need to log this anymore, we have our hardcoded fallback!
+  if (data && !error) {
+    setActiveIteration({
+      name: data.name,
+      // We add 'T12:00:00' to force mid-day and avoid timezone shifting
+      start: new Date(data.start_date + 'T12:00:00'),
+      end: new Date(data.end_date + 'T12:00:00')
+    });
   }
 };
 
-  syncCalendar();
+// 2. Update Iteration in Supabase
+const handleUpdateIteration = async (updatedData: any) => {
+  const { error } = await supabase
+    .from('iterations')
+    .update({
+      name: updatedData.name,
+      start_date: updatedData.start.toISOString().split('T')[0],
+      end_date: updatedData.end.toISOString().split('T')[0]
+    })
+    .match({ id: 'YOUR_ITERATION_ID_HERE' }); // Or just use .neq('name', '') if you only have one row
 
-  return () => {
-    supabase.removeChannel(channel);
-  };
-}, []); // Empty dependency array ensures this runs once on mount
-
+  if (!error) {
+    fetchIteration(); // Refresh the local state
+  } else {
+    console.error("Update failed:", error);
+  }
+};
   // 3. HELPER LOGIC
   const getMemberPoints = (memberId: string) => {
   return displayTasks
