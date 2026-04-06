@@ -399,25 +399,24 @@ const fetchCalendarEvents = async () => {
 };
 // Helper to find the "active" iteration from the calendar events
 const getCurrentIteration = (calendarEvents: any[]) => {
-  // 1. SAFETY CHECK: If it's not an array, stop here to avoid the crash
-  if (!Array.isArray(calendarEvents)) {
-    console.error("Calendar data is not an array:", calendarEvents);
-    return null;
-  }
+  if (!Array.isArray(calendarEvents)) return null;
 
   const today = new Date();
   
+  // 1. First, try to find an event that IS happening RIGHT NOW
   const activeEvent = calendarEvents.find(event => {
-  if (!event.start_time || !event.end_time) return false;
-  
-  // Force the dates to be treated as UTC to match the Calendar's source
-  const start = new Date(event.start_time);
-  const end = new Date(event.end_time);
-  const today = new Date();
+    const start = new Date(event.start_time);
+    const end = new Date(event.end_time);
+    return today >= start && today <= end && event.event_title.includes("PI");
+  });
 
-  // We use the 'UTC' methods to avoid the Chicago offset
-  return today >= start && today < end && event.event_title.includes("PI");
-});
+  if (activeEvent) return activeEvent;
 
-  return activeEvent || null;
+  // 2. FALLBACK: If nothing is active today (e.g., it's a weekend or planning gap),
+  // find the NEXT upcoming PI iteration so the board isn't empty.
+  const futureEvents = calendarEvents
+    .filter(event => new Date(event.start_time) > today && event.event_title.includes("PI"))
+    .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
+
+  return futureEvents[0] || null;
 };
