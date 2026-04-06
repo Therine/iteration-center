@@ -50,21 +50,32 @@ const fetchCalendarEvents = async () => {
 const getCurrentIteration = (calendarEvents: any[]) => {
   if (!calendarEvents || calendarEvents.length === 0) return null;
   
+  // Create "Today" but set it to NOON to avoid timezone/midnight overlap issues
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setHours(12, 0, 0, 0); 
 
-  // 1. Filter for PI events (Case Insensitive)
   const piEvents = calendarEvents
     .filter(e => e.event_title.toUpperCase().includes("PI"))
     .sort((a, b) => a.start_date.getTime() - b.start_date.getTime());
 
-  // 2. Try to find the event covering TODAY
-  const active = piEvents.find(event => today >= event.start_date && today < event.end_date);
+  // 1. Log the events to your console so you can see what was parsed
+  console.log("Searching for iteration. Today is:", today);
+  
+  // 2. Find active event
+  const active = piEvents.find(event => {
+    // Set event dates to midnight for a clean comparison
+    const start = new Date(event.start_date).setHours(0,0,0,0);
+    const end = new Date(event.end_date).setHours(0,0,0,0);
+    const t = today.getTime();
+    
+    return t >= start && t < end;
+  });
+
   if (active) return active;
 
-  // 3. FALLBACK: If nothing is active today, find the first event that starts in the FUTURE
+  // 3. Fallback to the closest future event if today is a "gap" day
   const future = piEvents.find(event => event.start_date > today);
-  return future || piEvents[piEvents.length - 1]; // Return future or the last known PI
+  return future || piEvents[piEvents.length - 1]; 
 };
 
 export default function Home() {
@@ -286,8 +297,14 @@ if (projectIds) {
     <div className="mt-4 p-4 bg-blue-600 rounded-xl text-white shadow-lg inline-block">
       <h2 className="text-xl font-bold leading-none">{activeIteration.name}</h2>
       <p className="text-blue-100 text-xs font-mono mt-1">
-        {activeIteration.start.toLocaleDateString()} — {new Date(activeIteration.end.getTime() - 86400000).toLocaleDateString()}
-      </p>
+  {activeIteration.start.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })} 
+  {" — "}
+  {/* If the start and end are the same, don't subtract a day, otherwise subtract 1 day for display */}
+  {activeIteration.start.getTime() === activeIteration.end.getTime() 
+    ? activeIteration.end.toLocaleDateString()
+    : new Date(activeIteration.end.getTime() - 86400000).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })
+  }
+</p>
     </div>
   </div>
   
