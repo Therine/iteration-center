@@ -94,22 +94,22 @@ useEffect(() => {
   )
   .subscribe();
   const syncCalendar = async () => {
-    const data = await fetchCalendarEvents();
-    
-    // Check if data is valid here BEFORE calling the helper
-    if (data && Array.isArray(data)) {
-      const current = getCurrentIteration(data);
-      if (current) {
-        setActiveIteration({
-          start: new Date(current.start_time),
-          end: new Date(current.end_time),
-          name: current.event_title
-        });
-      }
-    } else {
-      console.error("Fetch returned something other than an array:", data);
+  const data = await fetchCalendarEvents();
+  if (data && data.length > 0) {
+    const current = getCurrentIteration(data);
+    if (current) {
+      // Add this console log to see if PI3.4 is being found
+      console.log("Setting Active Iteration to:", current.event_title);
+      
+      setActiveIteration({
+        start: current.start_time,
+        end: current.end_time,
+        name: current.event_title
+      });
     }
-  };
+  }
+};
+  
 
   syncCalendar();
 }, []);
