@@ -403,20 +403,15 @@ const getCurrentIteration = (calendarEvents: any[]) => {
 
   const today = new Date();
   
-  // 1. First, try to find an event that IS happening RIGHT NOW
+  // 1. Find the event where TODAY falls between Start and End
   const activeEvent = calendarEvents.find(event => {
     const start = new Date(event.start_time);
     const end = new Date(event.end_time);
+    
+    // We check if today is >= start AND today is <= end
+    // Removing the space requirement from the title check
     return today >= start && today <= end && event.event_title.includes("PI");
   });
 
-  if (activeEvent) return activeEvent;
-
-  // 2. FALLBACK: If nothing is active today (e.g., it's a weekend or planning gap),
-  // find the NEXT upcoming PI iteration so the board isn't empty.
-  const futureEvents = calendarEvents
-    .filter(event => new Date(event.start_time) > today && event.event_title.includes("PI"))
-    .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime());
-
-  return futureEvents[0] || null;
+  return activeEvent || null;
 };
