@@ -43,7 +43,7 @@ export default function Login() {
           <input
             type="email"
             placeholder="internetID@umn.edu"
-            className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-xl outline-none focus:border-blue-500 transition-all font-bold"
+            className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900 placeholder:text-slate-400"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
