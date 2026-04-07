@@ -10,6 +10,8 @@ import ProjectForm from '@/components/ProjectForm';
 import ProjectDashboard from '@/components/ProjectDashboard';
 import IterationForm from '@/components/IterationForm';
 import Login from '@/components/Login';
+import ProjectView from '@/components/ProjectView';
+
 
 const fetchCalendarEvents = async () => {
 const ICS_URL = "https://calendar.google.com/calendar/ical/c_rdq4brm3fr9ht2pc9lacraeg4g%40group.calendar.google.com/public/basic.ics";
@@ -82,6 +84,7 @@ export default function Home() {
 
   const ITERATION_START = activeIteration.start;
   const ITERATION_END = activeIteration.end;
+  const [viewMode, setViewMode] = useState<'team' | 'project'>('team');
 
   // --- DATABASE FUNCTIONS ---
 
@@ -306,7 +309,43 @@ if (!session) {
 <ProjectDashboard projects={projects} tasks={tasks} onUpdateProject={updateProject} />
 </section>
 
+{/* 1. THE VIEW SWITCHER BUTTONS (Put these near your other filters) */}
+<div className="flex bg-slate-200 p-1 rounded-xl mb-8 w-fit">
+  <button 
+    onClick={() => setViewMode('team')}
+    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${viewMode === 'team' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+  >
+    By Team Member
+  </button>
+  <button 
+    onClick={() => setViewMode('project')}
+    className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${viewMode === 'project' ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+  >
+    By Project Roadmap
+  </button>
+</div>
 
+{/* 2. THE CONDITIONAL CONTENT */}
+{viewMode === 'team' ? (
+  <div className="flex gap-6 overflow-x-auto pb-8 snap-x">
+    {/* YOUR EXISTING TEAM_MEMBERS.map() CODE GOES HERE */}
+    {TEAM_MEMBERS.map((member) => (
+       <div key={member.id} className="min-w-[320px] snap-start">
+         {/* ... columns ... */}
+       </div>
+    ))}
+    {/* AND YOUR UNASSIGNED COLUMN */}
+  </div>
+) : (
+  <ProjectView 
+    tasks={displayTasks} // Use displayTasks so filters still work!
+    projects={projects}
+    teamMembers={TEAM_MEMBERS}
+    deleteTask={deleteTask}
+    toggleComplete={toggleComplete}
+    updateTask={updateTask}
+  />
+)}
 {/* VIEW & COMPLETED TOGGLES */}
 <div className="flex items-center gap-4 mb-6">
 <div className="flex bg-slate-200 p-1 rounded-xl w-fit">
