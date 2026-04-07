@@ -8,7 +8,7 @@ export default function TaskForm({ onAddTask, projects, tasks, teamMembers }: {
   onAddTask: (task: any) => void, 
   projects: any[], 
   tasks: any[],
-  teamMembers: string[] // Add this
+  teamMembers: any[]// Add this
 }) {
   // 1. ALL HOOKS AT THE TOP
   const [title, setTitle] = useState('');
@@ -83,19 +83,18 @@ console.log("Tasks received in Form:", tasks);
 {/* Assignee */}
 <div>
   <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Assignee</label>
-  <select 
-    className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900"
-    value={assignee} // Use 'assignee' state, not 'taskData.assignee'
-    onChange={(e) => setAssignee(e.target.value)} // Use 'setAssignee'
-
-  >
-    <option value="">Unassigned</option>
-  {teamMembers.map((member: any) => (
+<select
+  className="..."
+  value={formData.assignee}
+  onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
+>
+  <option value="">Unassigned</option>
+  {teamMembers.map((member) => (
     <option key={member.id} value={member.id}>
       {member.name}
     </option>
-    ))}
-  </select>
+  ))}
+</select>
 </div>
 
         {/* Due Date */}
