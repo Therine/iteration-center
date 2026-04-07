@@ -83,18 +83,19 @@ console.log("Tasks received in Form:", tasks);
 {/* Assignee */}
 <div>
   <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Assignee</label>
-<select
-  className="..."
-  value={formData.assignee}
-  onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
->
-  <option value="">Unassigned</option>
-  {teamMembers.map((member) => (
-    <option key={member.id} value={member.id}>
-      {member.name}
-    </option>
-  ))}
-</select>
+  <select
+    className="w-full p-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900"
+    /* Use the individual state hooks you defined at the top */
+    value={assignee}
+    onChange={(e) => setAssignee(e.target.value)}
+  >
+    <option value="">Unassigned</option>
+    {teamMembers.map((member) => (
+      <option key={member.id} value={member.id}>
+        {member.name}
+      </option>
+    ))}
+  </select>
 </div>
 
         {/* Due Date */}
