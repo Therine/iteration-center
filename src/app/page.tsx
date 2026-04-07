@@ -389,7 +389,7 @@ task={t}
 onDelete={deleteTask}
 onToggleComplete={toggleComplete}
 onUpdate={updateTask}
-teamMembers={TEAM_MEMBERS.map(m => m.name)}
+teamMembers={TEAM_MEMBERS}
 allProjects={projects}
 allTasks={tasks} />
 ))
