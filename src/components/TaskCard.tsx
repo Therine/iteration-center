@@ -233,14 +233,18 @@ const TaskCard = ({ task, onDelete, onToggleComplete, onUpdate, teamMembers, all
         </div>
       )}
       
-      <div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
-        <div className="flex items-center gap-2 text-slate-500">
-          <User size={14} />
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-            {/* FIXED LOOKUP HERE */}
-            {currentMember?.name || task.assignee || "Unassigned"}
-          </span>
-        </div>
+<div className="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+  <div className="flex items-center gap-2 text-slate-500">
+    <User size={14} />
+    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+      {/* We search the teamMembers array directly here. 
+          .trim() ensures no hidden spaces break the match.
+      */}
+      {teamMembers?.find(m => m.id?.trim() === task.assignee?.trim())?.name 
+        || task.assignee 
+        || "Unassigned"}
+    </span>
+  </div>
 
         {task.drive_url && (
           <a href={task.drive_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:underline">
